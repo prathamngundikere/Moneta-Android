@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.*
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-// data/repository/MonetaRepositoryImpl.kt
 @Singleton
 class MonetaRepositoryImpl @Inject constructor(
     private val api: MonetaApiClient,
@@ -26,10 +25,14 @@ class MonetaRepositoryImpl @Inject constructor(
             val accounts = remoteAccounts.map {
                 Account(
                     id = it.id ?: "",
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt,
                     name = it.name,
                     accountType = AccountType.valueOf(it.accountType),
                     balance = it.balance,
-                    currency = it.currency
+                    dueDate = it.dueDate,
+                    currency = it.currency,
+                    isActive = it.isActive
                 )
             }
             emit(Resource.Success(accounts))
@@ -42,10 +45,15 @@ class MonetaRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         try {
             val remoteCategories: List<CategoryDto> = api.get("/api/categories")
-            val categories = remoteCategories.map {
+            val categories = remoteCategories.map { dto ->
                 Category(
-                    id = it.id ?: "",
-                    name = it.name
+                    id = dto.id ?: "",
+                    createdAt = dto.createdAt,
+                    updatedAt = dto.updatedAt,
+                    name = dto.name,
+                    parentCategory = dto.parentCategory?.let { parent ->
+                        Category(parent.id ?: "", parent.createdAt, parent.updatedAt, parent.name)
+                    }
                 )
             }
             emit(Resource.Success(categories))
@@ -58,11 +66,16 @@ class MonetaRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         try {
             val remoteItems: List<ItemDto> = api.get("/api/items")
-            val items = remoteItems.map {
+            val items = remoteItems.map { dto ->
                 Item(
-                    id = it.id ?: "",
-                    name = it.name,
-                    description = it.description
+                    id = dto.id ?: "",
+                    createdAt = dto.createdAt,
+                    updatedAt = dto.updatedAt,
+                    name = dto.name,
+                    description = dto.description,
+                    category = dto.category?.let { cat ->
+                        Category(cat.id ?: "", cat.createdAt, cat.updatedAt, cat.name)
+                    }
                 )
             }
             emit(Resource.Success(items))
@@ -98,5 +111,49 @@ class MonetaRepositoryImpl @Inject constructor(
     override suspend fun clearOldCache() {
         val oneWeekAgo = Instant.now().minus(7, ChronoUnit.DAYS).toEpochMilli()
         dao.deleteOldTransactions(oneWeekAgo)
+    }
+
+    override suspend fun createAccount(name: String, type: AccountType, balance: Double, currency: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = api.post("/api/accounts", CreateAccountDto(name, type.name, balance, currency))
+            if (response.status.value in 200..299) emit(Resource.Success(Unit))
+            else emit(Resource.Error("Error: ${response.status.value}"))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Failed to create account"))
+        }
+    }
+
+    override suspend fun createCategory(name: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = api.post("/api/categories", CreateCategoryDto(name))
+            if (response.status.value in 200..299) emit(Resource.Success(Unit))
+            else emit(Resource.Error("Error: ${response.status.value}"))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Failed to create category"))
+        }
+    }
+
+    override suspend fun createItem(name: String, description: String?, categoryId: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = api.post("/api/items", CreateItemDto(name, description, ItemCategoryDto(categoryId)))
+            if (response.status.value in 200..299) emit(Resource.Success(Unit))
+            else emit(Resource.Error("Error: ${response.status.value}"))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Failed to create item"))
+        }
+    }
+
+    override suspend fun recordTransaction(payload: TransactionPayloadDto): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = api.post("/api/transactions", payload)
+            if (response.status.value in 200..299) emit(Resource.Success(Unit))
+            else emit(Resource.Error("Error: ${response.status.value}"))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Failed to record transaction"))
+        }
     }
 }

@@ -3,11 +3,8 @@ package com.prathamngundikere.moneta.data.remote.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ItemDto(
-    val id: String? = null,
-    val createdAt: String? = null,
-    val updatedAt: String? = null,
+data class CreateItemDto(
     val name: String,
     val description: String? = null,
-    val category: CategoryDto? = null
+    val category: ItemCategoryDto
 )

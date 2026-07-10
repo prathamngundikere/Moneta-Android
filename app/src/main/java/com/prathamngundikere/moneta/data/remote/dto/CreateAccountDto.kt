@@ -4,15 +4,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AccountDto(
-    val id: String? = null,
-    val createdAt: String? = null,
-    val updatedAt: String? = null,
+data class CreateAccountDto(
     val name: String,
     val accountType: String,
     val balance: Double,
-    val dueDate: String? = null,
     val currency: String,
+    val dueDate: String? = null,
     val isActive: Boolean = true,
-    @SerialName("is_active") val isActiveSnakeCase: Boolean? = true
+    @SerialName("is_active") val isActiveSnakeCase: Boolean = true
 )

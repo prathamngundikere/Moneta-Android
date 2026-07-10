@@ -20,21 +20,31 @@ import com.prathamngundikere.moneta.domain.model.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
+fun MainScreen(
+    viewModel: MainViewModel,
+    onNavigateToAddAccount: () -> Unit,
+    onNavigateToAddCategory: () -> Unit,
+    onNavigateToAddItem: () -> Unit,
+    onNavigateToTransfer: () -> Unit,
+    onNavigateToAddTransaction: () -> Unit
+) {
     val accountsState by viewModel.accounts.collectAsState()
-
     var isFabExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshData()
+    }
 
     Scaffold(
         floatingActionButton = {
             ExpandableFabMenu(
                 expanded = isFabExpanded,
                 onToggle = { isFabExpanded = !isFabExpanded },
-                onAddAccount = { isFabExpanded = false },
-                onAddCategory = { isFabExpanded = false },
-                onAddItem = { isFabExpanded = false },
-                onAddTransaction = { isFabExpanded = false },
-                onTransfer = { isFabExpanded = false }
+                onAddAccount = { isFabExpanded = false; onNavigateToAddAccount() },
+                onAddCategory = { isFabExpanded = false; onNavigateToAddCategory() },
+                onAddItem = { isFabExpanded = false; onNavigateToAddItem() },
+                onAddTransaction = { isFabExpanded = false; onNavigateToAddTransaction() },
+                onTransfer = { isFabExpanded = false; onNavigateToTransfer() }
             )
         }
     ) { paddingValues ->
@@ -74,26 +84,12 @@ fun MainScreen(viewModel: MainViewModel) {
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            val dummyTransactions = listOf(
-                TransactionUiModel("1", "Mall", 5000.0, "₹", "Today", listOf(
-                    TransactionItemUiModel("Shoes", 1, 3000.0),
-                    TransactionItemUiModel("Shirt", 2, 1000.0)
-                )),
-                TransactionUiModel("2", "Grocery Store", 1200.0, "₹", "Yesterday", listOf(
-                    TransactionItemUiModel("Milk", 2, 60.0),
-                    TransactionItemUiModel("Bread", 1, 40.0),
-                    TransactionItemUiModel("Vegetables", 1, 1040.0)
-                ))
-            )
-
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(dummyTransactions) { transaction ->
-                    TransactionExpandableCard(transaction)
-                }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = "No recent transactions found.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

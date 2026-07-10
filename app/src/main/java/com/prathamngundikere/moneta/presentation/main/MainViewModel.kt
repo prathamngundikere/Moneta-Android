@@ -10,7 +10,6 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-// presentation/main/MainViewModel.kt
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: MonetaRepository
@@ -25,7 +24,7 @@ class MainViewModel @Inject constructor(
     private val _items = MutableStateFlow<Resource<List<Item>>>(Resource.Loading())
     val items: StateFlow<Resource<List<Item>>> = _items.asStateFlow()
 
-    init {
+    fun refreshData() {
         fetchAccounts()
         fetchCategories()
         fetchItems()

@@ -8,6 +8,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import jakarta.inject.*
 import kotlinx.coroutines.flow.first
@@ -22,6 +23,7 @@ class MonetaApiClient @Inject constructor(
             json(Json {
                 ignoreUnknownKeys = true
                 isLenient = true
+                encodeDefaults = true
             })
         }
         install(DefaultRequest) {
@@ -35,13 +37,15 @@ class MonetaApiClient @Inject constructor(
     suspend inline fun <reified T> get(endpoint: String): T {
         return client.get("${getBaseUrl()}$endpoint") {
             header("X-API-KEY", getApiKey())
+            contentType(ContentType.Application.Json)
         }.body()
     }
 
-    suspend inline fun <reified T, reified R> post(endpoint: String, body: T): R {
+    suspend inline fun <reified T> post(endpoint: String, body: T): io.ktor.client.statement.HttpResponse {
         return client.post("${getBaseUrl()}$endpoint") {
             header("X-API-KEY", getApiKey())
+            contentType(ContentType.Application.Json)
             setBody(body)
-        }.body()
+        }
     }
 }
