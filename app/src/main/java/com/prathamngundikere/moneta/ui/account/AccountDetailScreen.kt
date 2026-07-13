@@ -24,6 +24,7 @@ fun AccountDetailScreen(
     val account by viewModel.account.collectAsState()
     val symbol by viewModel.currencySymbol.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val transactions by viewModel.transactions.collectAsState()
 
     var showEditNameDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -114,6 +115,28 @@ fun AccountDetailScreen(
                         DetailRow(label = "Account Type", value = account!!.accountType)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
                         DetailRow(label = "Status", value = if (account!!.isActive) "Active" else "Inactive")
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+                Text("Transaction History", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.Start).padding(horizontal = 24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                transactions.forEach { tx ->
+                    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp)) {
+                        Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Column {
+                                Text(tx.merchant, fontWeight = FontWeight.Bold)
+                                Text(tx.transactionDate.substringBefore("T"), style = MaterialTheme.typography.bodySmall)
+                            }
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(
+                                    "${if(tx.amountMoved > 0) "+" else ""}$symbol${"%.2f".format(tx.amountMoved)}",
+                                    color = if (tx.amountMoved > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text("Bal: $symbol${"%.2f".format(tx.currentAccountBalance)}", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
                     }
                 }
             }

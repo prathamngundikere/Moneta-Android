@@ -25,6 +25,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.prathamngundikere.moneta.R
 import com.prathamngundikere.moneta.data.model.enums.AccountType
 import com.prathamngundikere.moneta.ui.UiState
+import com.prathamngundikere.moneta.ui.setup.AddAccountDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +43,8 @@ fun HomeScreen(
 
     // The new Pull-to-Refresh state
     val pullRefreshState = rememberPullToRefreshState()
+
+    val recentTransactions by viewModel.recentTransactions.collectAsState()
 
     LaunchedEffect(uiState) {
         if (uiState is UiState.Error) {
@@ -84,7 +87,7 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 LazyRow(
-                    modifier = Modifier.fillMaxWidth(), // Fixed: Changed from fillMaxSize() to fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -140,6 +143,53 @@ fun HomeScreen(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Recent Transactions",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
+                if (recentTransactions.isEmpty()) {
+                    Text(
+                        text = "No recent transactions.",
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    recentTransactions.forEach { tx ->
+                        ElevatedCard(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 6.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        tx.merchant,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        tx.transactionDate.substringBefore("T"),
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                                Text(
+                                    text = "$symbol${"%.2f".format(tx.totalAmount)}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = if (tx.totalAmount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(88.dp))
             }
         }
     }

@@ -4,6 +4,7 @@ import com.prathamngundikere.moneta.data.datastore.SettingsManager
 import com.prathamngundikere.moneta.data.db.AccountDao
 import com.prathamngundikere.moneta.data.db.AccountEntity
 import com.prathamngundikere.moneta.data.model.dto.AccountCreateRequest
+import com.prathamngundikere.moneta.data.model.dto.AccountStatementDto
 import com.prathamngundikere.moneta.data.model.dto.AccountUpdateRequest
 import com.prathamngundikere.moneta.data.model.enums.AccountType
 import com.prathamngundikere.moneta.data.network.ApiService
@@ -98,5 +99,13 @@ class AccountRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun getAccountHistory(accountId: String): Result<List<AccountStatementDto>> {
+        return try {
+            val response = getApi().getAccountTransactions(accountId)
+            if (response.isSuccessful) Result.success(response.body()?.content ?: emptyList())
+            else Result.failure(Exception("Failed to fetch account history"))
+        } catch (e: Exception) { Result.failure(e) }
     }
 }

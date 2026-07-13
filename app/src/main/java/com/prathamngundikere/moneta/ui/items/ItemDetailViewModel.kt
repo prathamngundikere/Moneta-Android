@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prathamngundikere.moneta.data.db.ItemEntity
+import com.prathamngundikere.moneta.data.model.dto.ItemHistoryDto
 import com.prathamngundikere.moneta.data.repository.ItemRepository
 import com.prathamngundikere.moneta.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,13 @@ class ItemDetailViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiState = _uiState.asStateFlow()
+
+    private val _history = MutableStateFlow<List<ItemHistoryDto>>(emptyList())
+    val history = _history.asStateFlow()
+
+    init {
+        viewModelScope.launch { repository.getItemHistory(itemId).onSuccess { _history.value = it } }
+    }
 
     fun updateItem(name: String, description: String) {
         if (name.isBlank() || description.isBlank()) return

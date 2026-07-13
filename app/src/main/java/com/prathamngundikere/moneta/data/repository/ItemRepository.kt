@@ -5,6 +5,7 @@ import com.prathamngundikere.moneta.data.db.ItemDao
 import com.prathamngundikere.moneta.data.db.ItemEntity
 import com.prathamngundikere.moneta.data.model.dto.ItemAssignCategoryRequest
 import com.prathamngundikere.moneta.data.model.dto.ItemCreateRequest
+import com.prathamngundikere.moneta.data.model.dto.ItemHistoryDto
 import com.prathamngundikere.moneta.data.model.dto.ItemUpdateRequest
 import com.prathamngundikere.moneta.data.network.ApiService
 import com.prathamngundikere.moneta.data.network.RetrofitFactory
@@ -137,4 +138,12 @@ class ItemRepository @Inject constructor(
 
     // Add local fetch function
     fun getItemsByCategory(categoryId: String): Flow<List<ItemEntity>> = itemDao.getItemsByCategoryIdFlow(categoryId)
+
+    suspend fun getItemHistory(itemId: String): Result<List<ItemHistoryDto>> {
+        return try {
+            val response = getApi().getItemHistory(itemId)
+            if (response.isSuccessful) Result.success(response.body()?.content ?: emptyList())
+            else Result.failure(Exception("Failed to fetch item history"))
+        } catch (e: Exception) { Result.failure(e) }
+    }
 }

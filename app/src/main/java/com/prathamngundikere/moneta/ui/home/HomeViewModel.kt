@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.prathamngundikere.moneta.data.db.AccountEntity
 import com.prathamngundikere.moneta.data.model.enums.AccountType
 import com.prathamngundikere.moneta.data.repository.AccountRepository
+import com.prathamngundikere.moneta.data.repository.TransactionRepository
 import com.prathamngundikere.moneta.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -12,12 +13,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: AccountRepository
+    private val repository: AccountRepository,
+    private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
     val accounts: StateFlow<List<AccountEntity>> = repository.getAllAccounts()
@@ -32,11 +35,16 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiState = _uiState.asStateFlow()
 
+    val recentTransactions = transactionRepository.getAllTransactions()
+        .map { it.take(10) } // Keep it to recent 10 for dashboard
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     init {
         viewModelScope.launch {
             _currencySymbol.value = repository.getSymbol()
         }
         refreshAccounts()
+        viewModelScope.launch { transactionRepository.refreshTransactions() }
     }
 
     fun refreshAccounts() {

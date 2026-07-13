@@ -52,7 +52,7 @@ fun DashboardScreen(
                             restoreState = true
                         }
                     },
-                    icon = { Icon(painterResource(R.drawable.ic_list), contentDescription = "Transactions") },
+                    icon = { Icon(painterResource(R.drawable.ic_transfer), contentDescription = "Transactions") },
                     label = { Text("Transactions") }
                 )
 

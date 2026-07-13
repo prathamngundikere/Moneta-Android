@@ -92,7 +92,8 @@ fun AppNavigation(startDestination: String) {
             arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
         ) {
             CategoryDetailScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToItem = { itemId -> navController.navigate("itemDetail/$itemId") }
             )
         }
     }

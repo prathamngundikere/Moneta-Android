@@ -20,6 +20,7 @@ fun ItemDetailScreen(
 ) {
     val item by viewModel.item.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val history by viewModel.history.collectAsState()
 
     var showEditDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -108,6 +109,23 @@ fun ItemDetailScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline
                 )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text("Purchase History", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
+
+                history.forEach { hist ->
+                    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp)) {
+                        Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Column {
+                                Text(hist.merchant, fontWeight = FontWeight.Bold)
+                                Text(hist.purchaseDate.substringBefore("T"), style = MaterialTheme.typography.bodySmall)
+                                Text("Qty: ${hist.quantity} @ ${hist.unitPrice}", style = MaterialTheme.typography.labelSmall)
+                            }
+                            Text("${hist.totalPaid}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
             }
         }
     }

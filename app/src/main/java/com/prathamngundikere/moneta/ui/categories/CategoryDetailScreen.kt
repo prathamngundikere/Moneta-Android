@@ -17,6 +17,7 @@ import com.prathamngundikere.moneta.R
 @Composable
 fun CategoryDetailScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToItem: (String) -> Unit,
     viewModel: CategoryDetailViewModel = hiltViewModel()
 ) {
     val category by viewModel.category.collectAsState()
@@ -46,7 +47,10 @@ fun CategoryDetailScreen(
                 item { Text("No items in this category yet.", color = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
             items(items, key = { it.id }) { item ->
-                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    onClick = { onNavigateToItem(item.id) }
+                ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(item.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         if (item.description != null) Text(item.description, style = MaterialTheme.typography.bodyMedium)

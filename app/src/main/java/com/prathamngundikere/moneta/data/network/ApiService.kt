@@ -3,6 +3,7 @@ package com.prathamngundikere.moneta.data.network
 import com.prathamngundikere.moneta.data.model.dto.AccountCreateRequest
 import com.prathamngundikere.moneta.data.model.dto.AccountDto
 import com.prathamngundikere.moneta.data.model.dto.AccountInitRequest
+import com.prathamngundikere.moneta.data.model.dto.AccountStatementDto
 import com.prathamngundikere.moneta.data.model.dto.AccountUpdateRequest
 import com.prathamngundikere.moneta.data.model.dto.CategoryCreateRequest
 import com.prathamngundikere.moneta.data.model.dto.CategoryDto
@@ -10,6 +11,7 @@ import com.prathamngundikere.moneta.data.model.dto.CurrencyDto
 import com.prathamngundikere.moneta.data.model.dto.ItemAssignCategoryRequest
 import com.prathamngundikere.moneta.data.model.dto.ItemCreateRequest
 import com.prathamngundikere.moneta.data.model.dto.ItemDto
+import com.prathamngundikere.moneta.data.model.dto.ItemHistoryDto
 import com.prathamngundikere.moneta.data.model.dto.ItemUpdateRequest
 import com.prathamngundikere.moneta.data.model.dto.PageResponse
 import com.prathamngundikere.moneta.data.model.dto.PingResponse
@@ -83,4 +85,10 @@ interface ApiService {
 
     @POST("/api/transactions")
     suspend fun createTransaction(@Body request: TransactionPayloadDto): Response<TransactionDto>
+
+    @GET("/api/accounts/{id}/transactions")
+    suspend fun getAccountTransactions(@Path("id") id: String, @Query("page") page: Int = 0): Response<PageResponse<AccountStatementDto>>
+
+    @GET("/api/items/{id}/history")
+    suspend fun getItemHistory(@Path("id") id: String, @Query("page") page: Int = 0): Response<PageResponse<ItemHistoryDto>>
 }

@@ -27,6 +27,8 @@ fun TransactionsScreen(
     val symbol by viewModel.currencySymbol.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
 
+    var expanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = { CenterAlignedTopAppBar(title = { Text("Transactions", fontWeight = FontWeight.Bold) }) },
         floatingActionButton = {
@@ -47,28 +49,40 @@ fun TransactionsScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(transactions, key = { it.id }) { tx ->
-                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                        Row(
-                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column {
-                                Text(tx.merchant, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { expanded = !expanded }
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+                            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                                Column {
+                                    Text(tx.merchant, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                                    Text(
+                                        text = tx.transactionDate.substringBefore("T"),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                                 Text(
-                                    text = try {
-                                        val ldt = LocalDateTime.parse(tx.transactionDate)
-                                        ldt.format(DateTimeFormatter.ofPattern("MMM dd, yyyy"))
-                                    } catch (e: Exception) { tx.transactionDate },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    text = "$symbol${"%.2f".format(tx.totalAmount)}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = if (tx.totalAmount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
-                            Text(
-                                text = "$symbol${"%.2f".format(tx.totalAmount)}",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = if (tx.totalAmount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                                fontWeight = FontWeight.Bold
-                            )
+                            if (expanded) {
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                                Text(
+                                    text = "Notes: ${tx.notes ?: "No notes provided"}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "Transaction ID: ${tx.id}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
                         }
                     }
                 }

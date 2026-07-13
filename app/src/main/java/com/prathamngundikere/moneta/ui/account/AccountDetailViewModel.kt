@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prathamngundikere.moneta.data.db.AccountEntity
+import com.prathamngundikere.moneta.data.model.dto.AccountStatementDto
 import com.prathamngundikere.moneta.data.repository.AccountRepository
 import com.prathamngundikere.moneta.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,9 +36,13 @@ class AccountDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiState = _uiState.asStateFlow()
 
+    private val _transactions = MutableStateFlow<List<AccountStatementDto>>(emptyList())
+    val transactions = _transactions.asStateFlow()
+
     init {
         viewModelScope.launch {
             _currencySymbol.value = repository.getSymbol()
+            repository.getAccountHistory(accountId).onSuccess { _transactions.value = it }
         }
     }
 
