@@ -12,6 +12,7 @@ import com.prathamngundikere.moneta.ui.config.ConfigScreen
 import com.prathamngundikere.moneta.ui.main.DashboardScreen
 import com.prathamngundikere.moneta.ui.setup.SetupScreen
 import com.prathamngundikere.moneta.ui.items.ItemDetailScreen
+import com.prathamngundikere.moneta.ui.transactions.AddTransactionScreen
 
 @Composable
 fun AppNavigation(startDestination: String) {
@@ -56,7 +57,14 @@ fun AppNavigation(startDestination: String) {
                 },
                 onNavigateToCategory = { categoryId ->
                     navController.navigate("categoryDetail/$categoryId")
-                }
+                },
+                onNavigateToAddTransaction = { navController.navigate("addTransaction") }
+            )
+        }
+
+        composable("addTransaction") {
+            AddTransactionScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

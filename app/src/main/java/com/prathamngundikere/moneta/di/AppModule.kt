@@ -6,6 +6,7 @@ import com.prathamngundikere.moneta.data.db.AccountDao
 import com.prathamngundikere.moneta.data.db.CategoryDao
 import com.prathamngundikere.moneta.data.db.ItemDao
 import com.prathamngundikere.moneta.data.db.MonetaDatabase
+import com.prathamngundikere.moneta.data.db.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,4 +47,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCategoryDao(database: MonetaDatabase): CategoryDao = database.categoryDao()
+
+    @Provides
+    @Singleton
+    fun provideTransactionDao(database: MonetaDatabase): TransactionDao = database.transactionDao()
 }

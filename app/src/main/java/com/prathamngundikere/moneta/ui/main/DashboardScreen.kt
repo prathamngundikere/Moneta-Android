@@ -14,12 +14,14 @@ import com.prathamngundikere.moneta.R
 import com.prathamngundikere.moneta.ui.categories.CategoriesScreen
 import com.prathamngundikere.moneta.ui.home.HomeScreen
 import com.prathamngundikere.moneta.ui.items.ItemsScreen
+import com.prathamngundikere.moneta.ui.transactions.TransactionsScreen
 
 @Composable
 fun DashboardScreen(
     onNavigateToAccount: (String) -> Unit,
     onNavigateToItem: (String) -> Unit,
-    onNavigateToCategory: (String) -> Unit
+    onNavigateToCategory: (String) -> Unit,
+    onNavigateToAddTransaction: () -> Unit
 ) {
     val bottomNavController = rememberNavController()
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
@@ -37,12 +39,23 @@ fun DashboardScreen(
                             restoreState = true
                         }
                     },
-                    icon = { Icon(
-                        painter = painterResource(R.drawable.ic_account_balance),
-                        contentDescription = "Accounts"
-                    ) },
+                    icon = { Icon(painterResource(R.drawable.ic_account_balance), contentDescription = "Accounts") },
                     label = { Text("Accounts") }
                 )
+
+                NavigationBarItem(
+                    selected = currentRoute == "transactions",
+                    onClick = {
+                        bottomNavController.navigate("transactions") {
+                            popUpTo(bottomNavController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = { Icon(painterResource(R.drawable.ic_list), contentDescription = "Transactions") },
+                    label = { Text("Transactions") }
+                )
+
                 NavigationBarItem(
                     selected = currentRoute == "items",
                     onClick = {
@@ -52,12 +65,10 @@ fun DashboardScreen(
                             restoreState = true
                         }
                     },
-                    icon = { Icon(
-                        painter = painterResource(R.drawable.ic_list),
-                        contentDescription = "Items"
-                    ) },
+                    icon = { Icon(painterResource(R.drawable.ic_list), contentDescription = "Items") },
                     label = { Text("Items") }
                 )
+
                 NavigationBarItem(
                     selected = currentRoute == "categories",
                     onClick = {
@@ -80,6 +91,9 @@ fun DashboardScreen(
         ) {
             composable("accounts") {
                 HomeScreen(onNavigateToAccount = onNavigateToAccount)
+            }
+            composable("transactions") {
+                TransactionsScreen(onNavigateToAdd = onNavigateToAddTransaction)
             }
             composable("items") {
                 ItemsScreen(onNavigateToItem = onNavigateToItem)

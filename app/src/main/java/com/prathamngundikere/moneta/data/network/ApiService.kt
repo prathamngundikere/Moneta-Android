@@ -13,6 +13,8 @@ import com.prathamngundikere.moneta.data.model.dto.ItemDto
 import com.prathamngundikere.moneta.data.model.dto.ItemUpdateRequest
 import com.prathamngundikere.moneta.data.model.dto.PageResponse
 import com.prathamngundikere.moneta.data.model.dto.PingResponse
+import com.prathamngundikere.moneta.data.model.dto.TransactionDto
+import com.prathamngundikere.moneta.data.model.dto.TransactionPayloadDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -72,4 +74,13 @@ interface ApiService {
 
     @PUT("/api/items/assign-category")
     suspend fun assignItemsToCategory(@Body request: ItemAssignCategoryRequest): Response<Unit>
+
+    @GET("/api/transactions")
+    suspend fun getTransactions(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 50
+    ): Response<PageResponse<TransactionDto>>
+
+    @POST("/api/transactions")
+    suspend fun createTransaction(@Body request: TransactionPayloadDto): Response<TransactionDto>
 }
