@@ -3,6 +3,7 @@ package com.prathamngundikere.moneta.di
 import android.content.Context
 import androidx.room.Room
 import com.prathamngundikere.moneta.data.db.AccountDao
+import com.prathamngundikere.moneta.data.db.CategoryDao
 import com.prathamngundikere.moneta.data.db.ItemDao
 import com.prathamngundikere.moneta.data.db.MonetaDatabase
 import dagger.Module
@@ -41,4 +42,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideItemDao(database: MonetaDatabase): ItemDao = database.itemDao()
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(database: MonetaDatabase): CategoryDao = database.categoryDao()
 }

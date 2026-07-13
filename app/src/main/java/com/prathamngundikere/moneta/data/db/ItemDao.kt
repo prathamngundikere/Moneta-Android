@@ -29,4 +29,7 @@ interface ItemDao {
 
     @Query("DELETE FROM items")
     suspend fun deleteAllItems()
+
+    @Query("SELECT * FROM items WHERE categoryId = :categoryId ORDER BY updatedAt DESC")
+    fun getItemsByCategoryIdFlow(categoryId: String): Flow<List<ItemEntity>>
 }

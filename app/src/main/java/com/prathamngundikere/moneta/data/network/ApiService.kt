@@ -4,7 +4,10 @@ import com.prathamngundikere.moneta.data.model.dto.AccountCreateRequest
 import com.prathamngundikere.moneta.data.model.dto.AccountDto
 import com.prathamngundikere.moneta.data.model.dto.AccountInitRequest
 import com.prathamngundikere.moneta.data.model.dto.AccountUpdateRequest
+import com.prathamngundikere.moneta.data.model.dto.CategoryCreateRequest
+import com.prathamngundikere.moneta.data.model.dto.CategoryDto
 import com.prathamngundikere.moneta.data.model.dto.CurrencyDto
+import com.prathamngundikere.moneta.data.model.dto.ItemAssignCategoryRequest
 import com.prathamngundikere.moneta.data.model.dto.ItemCreateRequest
 import com.prathamngundikere.moneta.data.model.dto.ItemDto
 import com.prathamngundikere.moneta.data.model.dto.ItemUpdateRequest
@@ -60,4 +63,13 @@ interface ApiService {
         @Path("id") id: String,
         @Body request: ItemUpdateRequest
     ): Response<ItemDto>
+
+    @GET("/api/categories")
+    suspend fun getCategories(): Response<PageResponse<CategoryDto>>
+
+    @POST("/api/categories")
+    suspend fun createCategory(@Body request: CategoryCreateRequest): Response<CategoryDto>
+
+    @PUT("/api/items/assign-category")
+    suspend fun assignItemsToCategory(@Body request: ItemAssignCategoryRequest): Response<Unit>
 }

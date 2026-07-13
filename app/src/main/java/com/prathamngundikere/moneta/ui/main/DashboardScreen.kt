@@ -11,13 +11,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.prathamngundikere.moneta.R
+import com.prathamngundikere.moneta.ui.categories.CategoriesScreen
 import com.prathamngundikere.moneta.ui.home.HomeScreen
 import com.prathamngundikere.moneta.ui.items.ItemsScreen
 
 @Composable
 fun DashboardScreen(
     onNavigateToAccount: (String) -> Unit,
-    onNavigateToItem: (String) -> Unit
+    onNavigateToItem: (String) -> Unit,
+    onNavigateToCategory: (String) -> Unit
 ) {
     val bottomNavController = rememberNavController()
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
@@ -56,6 +58,18 @@ fun DashboardScreen(
                     ) },
                     label = { Text("Items") }
                 )
+                NavigationBarItem(
+                    selected = currentRoute == "categories",
+                    onClick = {
+                        bottomNavController.navigate("categories") {
+                            popUpTo(bottomNavController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = { Icon(painterResource(R.drawable.ic_category), contentDescription = "Categories") },
+                    label = { Text("Categories") }
+                )
             }
         }
     ) { innerPadding ->
@@ -69,6 +83,9 @@ fun DashboardScreen(
             }
             composable("items") {
                 ItemsScreen(onNavigateToItem = onNavigateToItem)
+            }
+            composable("categories") {
+                CategoriesScreen(onNavigateToCategory = onNavigateToCategory)
             }
         }
     }

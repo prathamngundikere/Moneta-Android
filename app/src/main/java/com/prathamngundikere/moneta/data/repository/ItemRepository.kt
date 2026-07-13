@@ -3,6 +3,7 @@ package com.prathamngundikere.moneta.data.repository
 import com.prathamngundikere.moneta.data.datastore.SettingsManager
 import com.prathamngundikere.moneta.data.db.ItemDao
 import com.prathamngundikere.moneta.data.db.ItemEntity
+import com.prathamngundikere.moneta.data.model.dto.ItemAssignCategoryRequest
 import com.prathamngundikere.moneta.data.model.dto.ItemCreateRequest
 import com.prathamngundikere.moneta.data.model.dto.ItemUpdateRequest
 import com.prathamngundikere.moneta.data.network.ApiService
@@ -33,7 +34,15 @@ class ItemRepository @Inject constructor(
             if (response.isSuccessful) {
                 val dtos = response.body()?.content ?: emptyList()
                 val entities = dtos.map {
-                    ItemEntity(it.id, it.name, it.description, it.category, it.createdAt, it.updatedAt)
+                    ItemEntity(
+                        id = it.id,
+                        name = it.name,
+                        description = it.description,
+                        categoryId = it.category?.id,
+                        categoryName = it.category?.name,
+                        createdAt = it.createdAt,
+                        updatedAt = it.updatedAt
+                    )
                 }
                 itemDao.insertItems(entities)
                 Result.success(Unit)
@@ -54,7 +63,15 @@ class ItemRepository @Inject constructor(
             if (response.isSuccessful) {
                 val dto = response.body()
                 if (dto != null) {
-                    val entity = ItemEntity(dto.id, dto.name, dto.description, dto.category, dto.createdAt, dto.updatedAt)
+                    val entity = ItemEntity(
+                        dto.id,
+                        dto.name,
+                        dto.description,
+                        dto.category?.id,
+                        dto.category?.name,
+                        dto.createdAt,
+                        dto.updatedAt
+                    )
                     itemDao.insertItem(entity)
                     Result.success(Unit)
                 } else {
@@ -77,7 +94,15 @@ class ItemRepository @Inject constructor(
             if (response.isSuccessful) {
                 val dto = response.body()
                 if (dto != null) {
-                    val updatedEntity = ItemEntity(dto.id, dto.name, dto.description, dto.category, dto.createdAt, dto.updatedAt)
+                    val updatedEntity = ItemEntity(
+                        dto.id,
+                        dto.name,
+                        dto.description,
+                        dto.category?.id,
+                        dto.category?.name,
+                        dto.createdAt,
+                        updatedAt = dto.updatedAt,
+                    )
                     itemDao.updateItem(updatedEntity)
                     Result.success(Unit)
                 } else {
@@ -90,4 +115,26 @@ class ItemRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun assignItemsToCategory(itemIds: List<String>, categoryId: String?): Result<Unit> {
+        return try {
+            val response = getApi().assignItemsToCategory(
+                ItemAssignCategoryRequest(
+                    itemIds,
+                    categoryId
+                )
+            )
+            if (response.isSuccessful) {
+                refreshItems() // Force refresh to update Room DB with new category linkages
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to assign items to category"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Add local fetch function
+    fun getItemsByCategory(categoryId: String): Flow<List<ItemEntity>> = itemDao.getItemsByCategoryIdFlow(categoryId)
 }

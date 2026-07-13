@@ -93,6 +93,17 @@ fun ItemsScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                            if (item.categoryName != null) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                AssistChip(
+                                    onClick = { },
+                                    label = { Text(item.categoryName) },
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        labelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
+                                )
+                            }
                         }
                     }
                 }

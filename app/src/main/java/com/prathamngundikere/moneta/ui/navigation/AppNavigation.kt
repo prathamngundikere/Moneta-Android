@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.prathamngundikere.moneta.ui.account.AccountDetailScreen
+import com.prathamngundikere.moneta.ui.categories.CategoryDetailScreen
 import com.prathamngundikere.moneta.ui.config.ConfigScreen
 import com.prathamngundikere.moneta.ui.main.DashboardScreen
 import com.prathamngundikere.moneta.ui.setup.SetupScreen
@@ -52,6 +53,9 @@ fun AppNavigation(startDestination: String) {
                 },
                 onNavigateToItem = { itemId ->
                     navController.navigate("itemDetail/$itemId")
+                },
+                onNavigateToCategory = { categoryId ->
+                    navController.navigate("categoryDetail/$categoryId")
                 }
             )
         }
@@ -71,6 +75,15 @@ fun AppNavigation(startDestination: String) {
             arguments = listOf(navArgument("itemId") { type = NavType.StringType })
         ) {
             ItemDetailScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "categoryDetail/{categoryId}",
+            arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
+        ) {
+            CategoryDetailScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
