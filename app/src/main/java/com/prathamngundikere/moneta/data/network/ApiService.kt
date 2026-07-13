@@ -5,6 +5,9 @@ import com.prathamngundikere.moneta.data.model.dto.AccountDto
 import com.prathamngundikere.moneta.data.model.dto.AccountInitRequest
 import com.prathamngundikere.moneta.data.model.dto.AccountUpdateRequest
 import com.prathamngundikere.moneta.data.model.dto.CurrencyDto
+import com.prathamngundikere.moneta.data.model.dto.ItemCreateRequest
+import com.prathamngundikere.moneta.data.model.dto.ItemDto
+import com.prathamngundikere.moneta.data.model.dto.ItemUpdateRequest
 import com.prathamngundikere.moneta.data.model.dto.PageResponse
 import com.prathamngundikere.moneta.data.model.dto.PingResponse
 import retrofit2.Response
@@ -42,4 +45,19 @@ interface ApiService {
         @Path("id") id: String,
         @Body request: AccountUpdateRequest
     ): Response<AccountDto>
+
+    @GET("/api/items")
+    suspend fun getItems(): Response<PageResponse<ItemDto>>
+
+    @GET("/api/items/{id}")
+    suspend fun getItem(@Path("id") id: String): Response<ItemDto>
+
+    @POST("/api/items")
+    suspend fun createItem(@Body request: ItemCreateRequest): Response<ItemDto>
+
+    @PUT("/api/items/{id}")
+    suspend fun updateItem(
+        @Path("id") id: String,
+        @Body request: ItemUpdateRequest
+    ): Response<ItemDto>
 }
