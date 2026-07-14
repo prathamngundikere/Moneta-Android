@@ -21,7 +21,8 @@ fun DashboardScreen(
     onNavigateToAccount: (String) -> Unit,
     onNavigateToItem: (String) -> Unit,
     onNavigateToCategory: (String) -> Unit,
-    onNavigateToAddTransaction: () -> Unit
+    onNavigateToAddTransaction: () -> Unit,
+    onNavigateToTransactionDetail: (String) -> Unit
 ) {
     val bottomNavController = rememberNavController()
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
@@ -93,7 +94,10 @@ fun DashboardScreen(
                 HomeScreen(onNavigateToAccount = onNavigateToAccount)
             }
             composable("transactions") {
-                TransactionsScreen(onNavigateToAdd = onNavigateToAddTransaction)
+                TransactionsScreen(
+                    onNavigateToAdd = onNavigateToAddTransaction,
+                    onNavigateToTransactionDetail = onNavigateToTransactionDetail
+                )
             }
             composable("items") {
                 ItemsScreen(onNavigateToItem = onNavigateToItem)

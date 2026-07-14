@@ -49,16 +49,11 @@ fun AppNavigation(startDestination: String) {
         // Replaced "home" with "dashboard" to host the Bottom Navigation UI
         composable("dashboard") {
             DashboardScreen(
-                onNavigateToAccount = { accountId ->
-                    navController.navigate("accountDetail/$accountId")
-                },
-                onNavigateToItem = { itemId ->
-                    navController.navigate("itemDetail/$itemId")
-                },
-                onNavigateToCategory = { categoryId ->
-                    navController.navigate("categoryDetail/$categoryId")
-                },
-                onNavigateToAddTransaction = { navController.navigate("addTransaction") }
+                onNavigateToAccount = { accountId -> navController.navigate("accountDetail/$accountId") },
+                onNavigateToItem = { itemId -> navController.navigate("itemDetail/$itemId") },
+                onNavigateToCategory = { categoryId -> navController.navigate("categoryDetail/$categoryId") },
+                onNavigateToAddTransaction = { navController.navigate("addTransaction") },
+                onNavigateToTransactionDetail = { transactionId -> navController.navigate("transactionDetail/$transactionId") }
             )
         }
 
@@ -94,6 +89,14 @@ fun AppNavigation(startDestination: String) {
             CategoryDetailScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToItem = { itemId -> navController.navigate("itemDetail/$itemId") }
+            )
+        }
+        composable(
+            route = "transactionDetail/{transactionId}",
+            arguments = listOf(navArgument("transactionId") { type = NavType.StringType })
+        ) {
+            com.prathamngundikere.moneta.ui.transactions.TransactionDetailScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

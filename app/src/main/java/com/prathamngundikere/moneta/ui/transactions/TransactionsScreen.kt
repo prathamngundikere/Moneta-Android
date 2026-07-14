@@ -20,14 +20,13 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TransactionsScreen(
     onNavigateToAdd: () -> Unit,
+    onNavigateToTransactionDetail: (String) -> Unit,
     viewModel: TransactionsViewModel = hiltViewModel()
 ) {
     val transactions by viewModel.transactions.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val symbol by viewModel.currencySymbol.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
-
-    var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { CenterAlignedTopAppBar(title = { Text("Transactions", fontWeight = FontWeight.Bold) }) },
@@ -51,12 +50,19 @@ fun TransactionsScreen(
                 items(transactions, key = { it.id }) { tx ->
                     ElevatedCard(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { expanded = !expanded }
+                        onClick = { onNavigateToTransactionDetail(tx.id) } // CHANGED THIS
                     ) {
                         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-                            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Column {
-                                    Text(tx.merchant, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                                    Text(
+                                        tx.merchant,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
                                     Text(
                                         text = tx.transactionDate.substringBefore("T"),
                                         style = MaterialTheme.typography.bodySmall,
@@ -68,19 +74,6 @@ fun TransactionsScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                     color = if (tx.totalAmount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                                     fontWeight = FontWeight.Bold
-                                )
-                            }
-                            if (expanded) {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
-                                Text(
-                                    text = "Notes: ${tx.notes ?: "No notes provided"}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "Transaction ID: ${tx.id}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    modifier = Modifier.padding(top = 8.dp)
                                 )
                             }
                         }

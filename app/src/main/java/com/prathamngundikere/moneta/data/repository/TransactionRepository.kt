@@ -3,6 +3,7 @@ package com.prathamngundikere.moneta.data.repository
 import com.prathamngundikere.moneta.data.datastore.SettingsManager
 import com.prathamngundikere.moneta.data.db.TransactionDao
 import com.prathamngundikere.moneta.data.db.TransactionEntity
+import com.prathamngundikere.moneta.data.model.dto.TransactionDetailDto
 import com.prathamngundikere.moneta.data.model.dto.TransactionPayloadDto
 import com.prathamngundikere.moneta.data.network.RetrofitFactory
 import jakarta.inject.Inject
@@ -57,6 +58,20 @@ class TransactionRepository @Inject constructor(
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Failed to create transaction"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getTransactionById(id: String): Result<TransactionDetailDto> {
+        return try {
+            val response = getApi().getTransactionById(id)
+            if (response.isSuccessful) {
+                response.body()?.let { Result.success(it) }
+                    ?: Result.failure(Exception("Transaction details not found"))
+            } else {
+                Result.failure(Exception("Failed to fetch transaction details"))
             }
         } catch (e: Exception) {
             Result.failure(e)

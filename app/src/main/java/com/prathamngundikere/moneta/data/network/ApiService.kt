@@ -15,6 +15,7 @@ import com.prathamngundikere.moneta.data.model.dto.ItemHistoryDto
 import com.prathamngundikere.moneta.data.model.dto.ItemUpdateRequest
 import com.prathamngundikere.moneta.data.model.dto.PageResponse
 import com.prathamngundikere.moneta.data.model.dto.PingResponse
+import com.prathamngundikere.moneta.data.model.dto.TransactionDetailDto
 import com.prathamngundikere.moneta.data.model.dto.TransactionDto
 import com.prathamngundikere.moneta.data.model.dto.TransactionPayloadDto
 import retrofit2.Response
@@ -91,4 +92,7 @@ interface ApiService {
 
     @GET("/api/items/{id}/history")
     suspend fun getItemHistory(@Path("id") id: String, @Query("page") page: Int = 0): Response<PageResponse<ItemHistoryDto>>
+
+    @GET("/api/transactions/{id}")
+    suspend fun getTransactionById(@Path("id") id: String): Response<TransactionDetailDto>
 }
