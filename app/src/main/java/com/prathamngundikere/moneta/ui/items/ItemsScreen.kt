@@ -114,8 +114,8 @@ fun ItemsScreen(
     if (showAddItemDialog) {
         AddItemDialog(
             onDismiss = { showAddItemDialog = false },
-            onAddItem = { name, desc ->
-                viewModel.addItem(name, desc)
+            onAddItem = { name, desc, unit ->
+                viewModel.addItem(name, desc, unit)
                 showAddItemDialog = false
             }
         )
@@ -125,10 +125,14 @@ fun ItemsScreen(
 @Composable
 fun AddItemDialog(
     onDismiss: () -> Unit,
-    onAddItem: (String, String) -> Unit
+    // UPDATE 1: Change signature to accept 3 Strings (name, description, unit)
+    onAddItem: (String, String, String) -> Unit
 ) {
     var draftName by remember { mutableStateOf("") }
     var draftDescription by remember { mutableStateOf("") }
+    // UPDATE 2: Add state for the unit
+    var draftUnit by remember { mutableStateOf("UNIT") }
+
     val focusManager = LocalFocusManager.current
 
     AlertDialog(
@@ -145,10 +149,22 @@ fun AddItemDialog(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
                 )
+
+                // UPDATE 3: Add Text Field for Unit
+                OutlinedTextField(
+                    value = draftUnit,
+                    onValueChange = { draftUnit = it },
+                    label = { Text("Unit (e.g. KG, L, UNIT)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
+
                 OutlinedTextField(
                     value = draftDescription,
                     onValueChange = { draftDescription = it },
-                    label = { Text("Description") },
+                    label = { Text("Description (Optional)") },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -158,8 +174,10 @@ fun AddItemDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onAddItem(draftName, draftDescription) },
-                enabled = draftName.isNotBlank() && draftDescription.isNotBlank()
+                // UPDATE 4: Pass all three values back when clicked
+                onClick = { onAddItem(draftName, draftDescription, draftUnit) },
+                // Make sure both name and unit are provided
+                enabled = draftName.isNotBlank() && draftUnit.isNotBlank()
             ) { Text("Add") }
         },
         dismissButton = {

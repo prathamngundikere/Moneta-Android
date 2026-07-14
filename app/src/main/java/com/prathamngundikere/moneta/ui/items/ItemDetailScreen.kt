@@ -134,9 +134,10 @@ fun ItemDetailScreen(
         AddItemDialog( // We can reuse AddItemDialog layout for editing by passing default values
             initialName = item!!.name,
             initialDescription = item!!.description ?: "",
+            initialUnit = item!!.unit,
             onDismiss = { showEditDialog = false },
-            onSave = { name, desc ->
-                viewModel.updateItem(name, desc)
+            onSave = { name, desc, unit ->
+                viewModel.updateItem(name, desc, unit)
                 showEditDialog = false
             }
         )
@@ -147,11 +148,13 @@ fun ItemDetailScreen(
 fun AddItemDialog(
     initialName: String = "",
     initialDescription: String = "",
+    initialUnit: String = "UNIT",
     onDismiss: () -> Unit,
-    onSave: (String, String) -> Unit
+    onSave: (String, String, String) -> Unit
 ) {
     var draftName by remember { mutableStateOf(initialName) }
     var draftDescription by remember { mutableStateOf(initialDescription) }
+    var draftUnit by remember { mutableStateOf(initialUnit) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -165,17 +168,23 @@ fun AddItemDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
+                    value = draftUnit,
+                    onValueChange = { draftUnit = it },
+                    label = { Text("Unit (e.g. KG, L, UNIT)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
                     value = draftDescription,
                     onValueChange = { draftDescription = it },
-                    label = { Text("Description") },
+                    label = { Text("Description (Optional)") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    minLines = 2
                 )
             }
         },
         confirmButton = {
             TextButton(
-                onClick = { onSave(draftName, draftDescription) },
+                onClick = { onSave(draftName, draftDescription, draftUnit) },
                 enabled = draftName.isNotBlank() && draftDescription.isNotBlank()
             ) { Text("Save") }
         },

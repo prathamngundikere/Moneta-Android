@@ -42,10 +42,10 @@ class ItemsViewModel @Inject constructor(
         }
     }
 
-    fun addItem(name: String, description: String) {
+    fun addItem(name: String, description: String, unit: String) {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-            repository.createItem(name, description).fold(
+            repository.createItem(name, description, unit).fold(
                 onSuccess = {
                     _uiState.value = UiState.Success(Unit)
                     refreshItems()

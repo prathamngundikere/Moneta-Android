@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
         CategoryEntity::class,
         TransactionEntity::class
                ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class MonetaDatabase : RoomDatabase() {

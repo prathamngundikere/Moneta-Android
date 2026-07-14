@@ -39,6 +39,7 @@ class ItemRepository @Inject constructor(
                         id = it.id,
                         name = it.name,
                         description = it.description,
+                        unit = it.unit,
                         categoryId = it.category?.id,
                         categoryName = it.category?.name,
                         createdAt = it.createdAt,
@@ -55,10 +56,10 @@ class ItemRepository @Inject constructor(
         }
     }
 
-    suspend fun createItem(name: String, description: String): Result<Unit> {
+    suspend fun createItem(name: String, description: String, unit: String): Result<Unit> {
         return try {
             val api = getApi()
-            val request = ItemCreateRequest(name, description)
+            val request = ItemCreateRequest(name, description, unit)
             val response = api.createItem(request)
 
             if (response.isSuccessful) {
@@ -68,6 +69,7 @@ class ItemRepository @Inject constructor(
                         dto.id,
                         dto.name,
                         dto.description,
+                        unit = dto.unit,
                         dto.category?.id,
                         dto.category?.name,
                         dto.createdAt,
@@ -86,10 +88,10 @@ class ItemRepository @Inject constructor(
         }
     }
 
-    suspend fun updateItem(id: String, name: String, description: String): Result<Unit> {
+    suspend fun updateItem(id: String, name: String, description: String, unit: String): Result<Unit> {
         return try {
             val api = getApi()
-            val request = ItemUpdateRequest(name, description)
+            val request = ItemUpdateRequest(name, description, unit)
             val response = api.updateItem(id, request)
 
             if (response.isSuccessful) {
@@ -99,6 +101,7 @@ class ItemRepository @Inject constructor(
                         dto.id,
                         dto.name,
                         dto.description,
+                        dto.unit,
                         dto.category?.id,
                         dto.category?.name,
                         dto.createdAt,

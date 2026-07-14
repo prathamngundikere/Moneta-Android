@@ -38,12 +38,12 @@ class ItemDetailViewModel @Inject constructor(
         viewModelScope.launch { repository.getItemHistory(itemId).onSuccess { _history.value = it } }
     }
 
-    fun updateItem(name: String, description: String) {
+    fun updateItem(name: String, description: String, unit: String) {
         if (name.isBlank() || description.isBlank()) return
 
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-            repository.updateItem(itemId, name, description).fold(
+            repository.updateItem(itemId, name, description, unit).fold(
                 onSuccess = { _uiState.value = UiState.Success(Unit) },
                 onFailure = { _uiState.value = UiState.Error(it.message ?: "Failed to update item") }
             )

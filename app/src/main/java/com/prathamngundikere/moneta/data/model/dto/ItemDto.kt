@@ -6,7 +6,8 @@ data class ItemDto(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
     @SerializedName("description") val description: String?,
-    @SerializedName("category") val category: CategoryDto?, // Changed to object
+    @SerializedName("unit") val unit: String,
+    @SerializedName("category") val category: CategoryDto?,
     @SerializedName("createdAt") val createdAt: String,
     @SerializedName("updatedAt") val updatedAt: String
 )
